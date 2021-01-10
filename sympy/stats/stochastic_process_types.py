@@ -10,7 +10,7 @@ from sympy import (Matrix, MatrixSymbol, S, Indexed, Basic, Tuple, Range,
                    Union, Expr, Function, exp, cacheit, sqrt, pi, gamma,
                    Ge, Piecewise, Symbol, NonSquareMatrixError, EmptySet,
                    ceiling, MatrixBase, ConditionSet, ones, zeros, Identity,
-                   Rational, Lt, Gt, Le, Ne, BlockMatrix, Sum)
+                   Rational, Lt, Gt, Le, Ne, BlockMatrix, Sum, log)
 from sympy.core.relational import Relational
 from sympy.logic.boolalg import Boolean
 from sympy.utilities.exceptions import SymPyDeprecationWarning
@@ -24,7 +24,7 @@ from sympy.stats.stochastic_process import StochasticPSpace
 from sympy.stats.symbolic_probability import Probability, Expectation
 from sympy.stats.frv_types import Bernoulli, BernoulliDistribution, FiniteRV
 from sympy.stats.drv_types import Poisson, PoissonDistribution
-from sympy.stats.crv_types import Normal, NormalDistribution, Gamma, GammaDistribution
+from sympy.stats.crv_types import Normal, NormalDistribution, Gamma, GammaDistribution, LogNormalDistribution, LogNormal
 from sympy.core.sympify import _sympify, sympify
 
 __all__ = [
@@ -38,6 +38,7 @@ __all__ = [
     'BernoulliProcess',
     'PoissonProcess',
     'WienerProcess',
+    'GeometricBrownianMotion'
     'GammaProcess'
 ]
 
@@ -2326,3 +2327,41 @@ class GammaProcess(CountingProcess):
 
     def simple_rv(self, rv):
         return Gamma(rv.name, self.gamma*rv.key, 1/self.lamda)
+
+class GeometricBrownianMotion(CountingProcess):
+    def __new__(cls, sym, mu, sigma, start):
+        sym = _symbol_converter(sym)
+        mu = _sympify(mu)
+        sigma = _sympify(sigma)
+        start = _sympify(start)
+
+        return Basic.__new__(cls, sym, mu, sigma, start)
+
+    @property
+    def mu(self):
+        return self.args[1]
+
+    @property
+    def sigma(self):
+        return self.args[2]
+
+    @property
+    def start(self):
+        return self.args[3]
+
+    @property
+    def state_space(self):
+        return S.reals
+
+    def distribution(self, rv):
+        return LogNormalDistribution(log(self.start) + (self.mu - S.Half * self.sigma ** 2) * rv.key,
+                                     self.sigma * sqrt(rv.key))
+
+    def density(self, x):
+        t = x.key
+        return exp(-(log(x) - log(self.start) - (self.mu - S.Half * self.sigma ** 2) * t) ** 2) \
+                / (self.sigma * x * sqrt(2 * pi * t))
+
+    def simple_rv(self, rv):
+        return LogNormal(rv.name, log(self.start) + (self.mu - S.Half * self.sigma ** 2) * rv.key,
+                                     self.sigma * sqrt(rv.key))
