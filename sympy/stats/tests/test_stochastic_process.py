@@ -1,11 +1,11 @@
 from sympy import (S, symbols, FiniteSet, Eq, Matrix, MatrixSymbol, Float, And,
                    ImmutableMatrix, Ne, Lt, Le, Gt, Ge, exp, Not, Rational, Lambda, erf,
-                   Piecewise, factorial, Interval, oo, Contains, sqrt, pi, ceiling,
+                   Piecewise, factorial, Interval, oo, Contains, sqrt, pi, ceiling, log,
                    gamma, lowergamma, Sum, Range, Tuple, ImmutableDenseMatrix, Symbol)
 from sympy.stats import (DiscreteMarkovChain, P, TransitionMatrixOf, E,
                          StochasticStateSpaceOf, variance, ContinuousMarkovChain,
                          BernoulliProcess, PoissonProcess, WienerProcess,
-                         GammaProcess, sample_stochastic_process)
+                         GammaProcess, GeometricBrownianMotion, sample_stochastic_process)
 from sympy.stats.joint_rv import JointDistribution
 from sympy.stats.joint_rv_types import JointDistributionHandmade
 from sympy.stats.rv import RandomIndexedSymbol
@@ -14,7 +14,7 @@ from sympy.testing.pytest import raises, skip, ignore_warnings
 from sympy.external import import_module
 from sympy.stats.frv_types import BernoulliDistribution
 from sympy.stats.drv_types import PoissonDistribution
-from sympy.stats.crv_types import NormalDistribution, GammaDistribution
+from sympy.stats.crv_types import NormalDistribution, GammaDistribution, LogNormalDistribution
 from sympy.core.symbol import Str
 
 
@@ -694,3 +694,18 @@ def test_GammaProcess_numeric():
 
     assert E(X(t)) == 2*t # E(X(t)) == gamma*t/l
     assert E(X(2) + x*E(X(5))) == 10*x + 4
+
+def test_GeometricBrownianMotion():
+    S0, mu, sigma = symbols('S0 mu sigma', positive=True)
+    X = GeometricBrownianMotion("X", mu=mu, sigma=sigma, start=S0)
+    assert X.state_space == S.Reals
+    assert X.index_set == Interval(0, oo)
+
+    t = symbols('t', positive=True)
+    assert isinstance(X(t), RandomIndexedSymbol)
+    assert X.distribution(X(t)) == LogNormalDistribution(t*(mu - sigma**2/2) + log(S0), sigma*sqrt(t))
+
+    raises(ValueError, lambda: PoissonProcess("X", -1))
+    raises(NotImplementedError, lambda: X[t])
+    raises(IndexError, lambda: X(-2))
+

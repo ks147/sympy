@@ -2354,14 +2354,12 @@ class GeometricBrownianMotion(CountingProcess):
         return S.reals
 
     def distribution(self, rv):
-        return LogNormalDistribution(log(self.start) + (self.mu - S.Half * self.sigma ** 2) * rv.key,
-                                     self.sigma * sqrt(rv.key))
+        return LogNormalDistribution(log(self.start) + self.mu * rv.key, self.sigma * sqrt(rv.key))
 
     def density(self, x):
         t = x.key
-        return exp(-(log(x) - log(self.start) - (self.mu - S.Half * self.sigma ** 2) * t) ** 2) \
+        return exp(-((log(x) - log(self.start) - self.mu * t ) ** 2) / (2 * t * self.sigma ** 2)) \
                 / (self.sigma * x * sqrt(2 * pi * t))
 
     def simple_rv(self, rv):
-        return LogNormal(rv.name, log(self.start) + (self.mu - S.Half * self.sigma ** 2) * rv.key,
-                                     self.sigma * sqrt(rv.key))
+        return LogNormal(rv.name, log(self.start) + self.mu * rv.key, self.sigma * sqrt(rv.key))

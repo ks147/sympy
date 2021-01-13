@@ -133,7 +133,7 @@ __all__ = [
     'StochasticProcess', 'DiscreteTimeStochasticProcess',
     'DiscreteMarkovChain', 'TransitionMatrixOf', 'StochasticStateSpaceOf',
     'GeneratorMatrixOf', 'ContinuousMarkovChain', 'BernoulliProcess',
-    'PoissonProcess', 'WienerProcess', 'GammaProcess', 'GeometricBrownianMotion'
+    'PoissonProcess', 'WienerProcess', 'GammaProcess', 'GeometricBrownianMotion',
 
     'CircularEnsemble', 'CircularUnitaryEnsemble',
     'CircularOrthogonalEnsemble', 'CircularSymplecticEnsemble',
