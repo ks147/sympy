@@ -305,7 +305,7 @@ class DomainMatrix:
         ...     [QQ(-1,2), 2,0]], (3, 3), QQ)
         >>> rref_matrix, rref_pivots = A.rref()
         >>> rref_matrix
-        DomainMatrix([[1.0, 0.0, 0.0], [0, 1.0, 0.0], [0, 0.0, 1.0]], (3, 3), QQ)
+        DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
         >>> rref_pivots
         (0, 1, 2)
 
@@ -346,7 +346,7 @@ class DomainMatrix:
         ... [-1, 2, -1],
         ... [0, 0, 2]], (3, 3), QQ)
         >>> A.inv()
-        DomainMatrix([[0.66666666666666663, 0.33333333333333331, 0.16666666666666666], [0.33333333333333331, 0.66666666666666663, 0.33333333333333331], [0.0, 0.0, 0.5]], (3, 3), QQ)
+        DomainMatrix([[0.66666666666666663, 0.33333333333333331, 0.16666666666666666], [0.33333333333333331, 0.66666666666666663, 0.33333333333333331], [0, 0, 0.5]], (3, 3), QQ)
 
         """
         if not self.domain.is_Field:
@@ -370,7 +370,7 @@ class DomainMatrix:
         ... [-1, 2, -1],
         ... [0, 0, 2]], (3, 3), ZZ)
         >>> A.det()
-        mpz(6)
+        6
 
         """
         m, n = self.shape
@@ -397,7 +397,7 @@ class DomainMatrix:
         ... [0, 0, 2]], (3, 3), QQ)
         >>> L, U, swaps = A.lu()
         >>> L
-        DomainMatrix([[1, 0, 0], [-0.5, 1, 0], [0.0, 0.0, 1]], (3, 3), QQ)
+        DomainMatrix([[1, 0, 0], [-0.5, 1, 0], [0, 0, 1]], (3, 3), QQ)
         >>> U
         DomainMatrix([[2, -1, 0], [0, 1.5, -1.0], [0, 0, 2.0]], (3, 3), QQ)
         >>> swaps
@@ -427,7 +427,7 @@ class DomainMatrix:
         >>> b = DomainMatrix([[1],[4],[0]], (3, 1), QQ)
         >>> x = A.lu_solve(b)
         >>> x
-        DomainMatrix([[2.0], [3.0], [0.0]], (3, 1), QQ)
+        DomainMatrix([[2.0], [3.0], [0]], (3, 1), QQ)
 
         """
         if self.shape[0] != rhs.shape[0]:
@@ -452,7 +452,7 @@ class DomainMatrix:
         ...     [-1, 2, -1],
         ...     [0, 0, 2]], (3, 3), QQ)
         >>> A.charpoly()
-        [mpq(1,1), mpq(-6,1), mpq(11,1), mpq(-6,1)]
+        [1, -6, 11, -6]
 
         """
         m, n = self.shape
