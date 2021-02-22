@@ -117,16 +117,10 @@ class DomainMatrix:
         ========
 
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> from sympy import QQ, RR
-        >>> A = DomainMatrix([[QQ(1,2), 3]], (1, 2), QQ)
-        >>> A.convert_to(RR)
-        DomainMatrix([[0.5, 3.0]], (1, 2), RR)
-
-        >>> from sympy.polys.matrices import DomainMatrix
-        >>> from sympy import QQ, RR
-        >>> A = DomainMatrix([[RR(1.5), RR(1)], [RR(1.2), RR(0.3)]], (2, 2), RR)
+        >>> from sympy import QQ, ZZ
+        >>> A = DomainMatrix([[ZZ(1), ZZ(3)]], (1, 2), ZZ)
         >>> A.convert_to(QQ)
-        DomainMatrix([[3/2, 1], [6/5, 3/10]], (2, 2), QQ)
+        DomainMatrix([[1, 3]], (1, 2), QQ)
 
         """
         return self.from_rep(self.rep.convert_to(K))
@@ -154,11 +148,11 @@ class DomainMatrix:
         ========
 
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> from sympy import ZZ, RR
-        >>> A = DomainMatrix([[1, 2, 3]], (1, 3), ZZ)
-        >>> B = DomainMatrix([[RR(1.2), RR(2.0), RR(3.4)]], (1, 3), RR)
+        >>> from sympy import ZZ, QQ
+        >>> A = DomainMatrix([[ZZ(1), ZZ(2), ZZ(3)]], (1, 3), ZZ)
+        >>> B = DomainMatrix([[QQ(1, 2), QQ(3, 5)]], (1, 2), QQ)
         >>> A.unify(B)
-        (DomainMatrix([[1.0, 2.0, 3.0]], (1, 3), RR), DomainMatrix([[1.2, 2.0, 3.4]], (1, 3), RR))
+        (DomainMatrix([[1, 2, 3]], (1, 3), QQ), DomainMatrix([[1/2, 3/5]], (1, 2), QQ))
 
         """
         K1 = self.domain
@@ -181,7 +175,7 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> A = DomainMatrix([[1, 2], [2, 3]], (2, 2), ZZ)
+        >>> A = DomainMatrix([[ZZ(1), ZZ(2)], [ZZ(2), ZZ(3)]], (2, 2), ZZ)
         >>> A.to_Matrix()
         Matrix([
         [1, 2],
@@ -200,6 +194,20 @@ class DomainMatrix:
         return 'DomainMatrix(%s, %r, %r)' % (rowstr, self.shape, self.domain)
 
     def hstack(A, B):
+        """ Horizontally stack 2 Domain Matrices
+
+        Examples
+        ========
+
+        >>> from sympy import ZZ, QQ
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> A = DomainMatrix([[ZZ(1), ZZ(2), ZZ(3)]], (1, 3), ZZ)
+        >>> B = DomainMatrix([[QQ(-1, 2), QQ(1, 2), QQ(1, 3)]],(1, 3), QQ)
+
+        >>> A.hstack(B)
+        DomainMatrix([[1, 2, 3, -1/2, 1/2, 1/3]], (1, 6), QQ)
+
+        """
         A, B = A.unify(B)
         return A.from_rep(A.rep.hstack(B.rep))
 
@@ -269,7 +277,7 @@ class DomainMatrix:
 
         >>> from sympy.polys.matrices import DomainMatrix
         >>> from sympy import ZZ
-        >>> A = DomainMatrix([[1, 3], [2, 1]], (2, 2), ZZ)
+        >>> A = DomainMatrix([[ZZ(1), ZZ(3)], [ZZ(2), ZZ(1)]], (2, 2), ZZ)
         >>> pow(A, 3)
         DomainMatrix([[19, 27], [18, 19]], (2, 2), ZZ)
 
@@ -300,9 +308,9 @@ class DomainMatrix:
         >>> from sympy.polys.matrices import DomainMatrix
         >>> from sympy import QQ
         >>> A = DomainMatrix([
-        ...     [1, QQ(1,2), 3],
-        ...     [2, QQ(3,4), 1],
-        ...     [QQ(-1,2), 2,0]], (3, 3), QQ)
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
         >>> rref_matrix, rref_pivots = A.rref()
         >>> rref_matrix
         DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
@@ -322,12 +330,10 @@ class DomainMatrix:
         ========
 
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> from sympy import ZZ
-        >>> A = DomainMatrix([
-        ... [1, -1],
-        ... [2, -2]], (2, 2), ZZ)
+        >>> from sympy import QQ
+        >>> A = DomainMatrix([[QQ(1), QQ(-1)], [QQ(2), QQ(-2)]], (2, 2), QQ)
         >>> A.nullspace()
-        DomainMatrix([[1.0, 1]], (1, 2), ZZ)
+        DomainMatrix([[1, 1]], (1, 2), QQ)
 
         """
         return self.from_rep(self.rep.nullspace()[0])
@@ -342,11 +348,11 @@ class DomainMatrix:
         >>> from sympy.polys.matrices import DomainMatrix
         >>> from sympy import QQ
         >>> A = DomainMatrix([
-        ... [2, -1, 0],
-        ... [-1, 2, -1],
-        ... [0, 0, 2]], (3, 3), QQ)
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
         >>> A.inv()
-        DomainMatrix([[0.66666666666666663, 0.33333333333333331, 0.16666666666666666], [0.33333333333333331, 0.66666666666666663, 0.33333333333333331], [0, 0, 0.5]], (3, 3), QQ)
+        DomainMatrix([[2/3, 1/3, 1/6], [1/3, 2/3, 1/3], [0, 0, 1/2]], (3, 3), QQ)
 
         """
         if not self.domain.is_Field:
@@ -364,11 +370,11 @@ class DomainMatrix:
         ========
 
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> from sympy import ZZ
+        >>> from sympy import QQ
         >>> A = DomainMatrix([
-        ... [2, -1, 0],
-        ... [-1, 2, -1],
-        ... [0, 0, 2]], (3, 3), ZZ)
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
         >>> A.det()
         6
 
@@ -392,14 +398,14 @@ class DomainMatrix:
         >>> from sympy.polys.matrices import DomainMatrix
         >>> from sympy import QQ
         >>> A = DomainMatrix([
-        ... [2, -1, 0],
-        ... [-1, 2, -1],
-        ... [0, 0, 2]], (3, 3), QQ)
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
         >>> L, U, swaps = A.lu()
         >>> L
-        DomainMatrix([[1, 0, 0], [-0.5, 1, 0], [0, 0, 1]], (3, 3), QQ)
+        DomainMatrix([[1, 0, 0], [-1/2, 1, 0], [0, 0, 1]], (3, 3), QQ)
         >>> U
-        DomainMatrix([[2, -1, 0], [0, 1.5, -1.0], [0, 0, 2.0]], (3, 3), QQ)
+        DomainMatrix([[2, -1, 0], [0, 3/2, -1], [0, 0, 2]], (3, 3), QQ)
         >>> swaps
         []
         >>> L*U == A
@@ -421,13 +427,13 @@ class DomainMatrix:
         >>> from sympy.polys.matrices import DomainMatrix
         >>> from sympy import QQ
         >>> A = DomainMatrix([
-        ...     [2, -1, 0],
-        ...     [-1, 2, -1],
-        ...     [0, 0, 2]], (3, 3), QQ)
-        >>> b = DomainMatrix([[1],[4],[0]], (3, 1), QQ)
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
+        >>> b = DomainMatrix([[QQ(1)],[QQ(4)],[QQ(0)]], (3, 1), QQ)
         >>> x = A.lu_solve(b)
         >>> x
-        DomainMatrix([[2.0], [3.0], [0]], (3, 1), QQ)
+        DomainMatrix([[2], [3], [0]], (3, 1), QQ)
 
         """
         if self.shape[0] != rhs.shape[0]:
@@ -448,11 +454,11 @@ class DomainMatrix:
         >>> from sympy.polys.matrices import DomainMatrix
         >>> from sympy import QQ
         >>> A = DomainMatrix([
-        ...     [2, -1, 0],
-        ...     [-1, 2, -1],
-        ...     [0, 0, 2]], (3, 3), QQ)
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
         >>> A.charpoly()
-        [1, -6, 11, -6]
+         [1, -6, 11, -6]
 
         """
         m, n = self.shape
