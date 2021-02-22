@@ -31,6 +31,26 @@ class DomainMatrix:
 
     @classmethod
     def from_list_sympy(cls, nrows, ncols, rows, **kwargs):
+        """Converts a list to Domain Matrix
+
+        Examples
+        ========
+        Define a Domain Matrix on the field of Integers
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> A = DomainMatrix.from_list_sympy(1 , 2, [[1, 0]])
+        >>> A
+        DomainMatrix([[1, 0]], (1, 2), ZZ)
+
+        We now define a Domain Matrix on the field of Rational Numbers
+
+        >>> from sympy import Rational
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> A = DomainMatrix.from_list_sympy(2, 2, [[Rational(1,2), Rational(3,4)],[2, Rational(1,5)]])
+        >>> A
+        DomainMatrix([[1/2, 3/4], [2, 1/5]], (2, 2), QQ)
+
+        """
         assert len(rows) == nrows
         assert all(len(row) == ncols for row in rows)
 
@@ -44,14 +64,66 @@ class DomainMatrix:
 
     @classmethod
     def from_Matrix(cls, M, **kwargs):
+        """Converts a Matrix to Domain Matrix of
+        suitable Domain
+
+        Examples
+        ========
+        Define a Domain Matrix on the field of Rationals
+
+        >>> from sympy import Matrix, Rational
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> A = DomainMatrix.from_Matrix(Matrix([
+        ...     [Rational(1,2), Rational(3,4)],
+        ...     [2, Rational(1,5)],
+        ... ]))
+        >>> A
+        DomainMatrix([[1/2, 3/4], [2, 1/5]], (2, 2), QQ)
+
+        Define a Domain matrix on the field of Reals.
+        >>> from sympy import Matrix
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> A = DomainMatrix.from_Matrix(Matrix([
+        ...     [1.0, 3.4],
+        ...     [2.4, 1]
+        ... ]))
+        >>> A
+        DomainMatrix([[1.0, 3.4], [2.4, 1.0]], (2, 2), RR)
+
+        """
         return cls.from_list_sympy(*M.shape, M.tolist(), **kwargs)
 
     @classmethod
     def get_domain(cls, items_sympy, **kwargs):
+
         K, items_K = construct_domain(items_sympy, **kwargs)
         return K, items_K
 
     def convert_to(self, K):
+        """ Converts an object of a given Domain to another specified
+        domain K
+
+        Parameters
+        ==========
+
+        K: Matrix is to be converted to Domain K
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ, RR
+        >>> A = DomainMatrix([[QQ(1,2), 3]], (1, 2), QQ)
+        >>> A.convert_to(RR)
+        DomainMatrix([[0.5, 3.0]], (1, 2), RR)
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ, RR
+        >>> A = DomainMatrix([[RR(1.5), RR(1)], [RR(1.2), RR(0.3)]], (2, 2), RR)
+        >>> A.convert_to(QQ)
+        DomainMatrix([[3/2, 1], [6/5, 3/10]], (2, 2), QQ)
+
+        """
         Kold = self.domain
         if K == Kold:
             return self.from_ddm(self.rep.copy())
@@ -63,6 +135,31 @@ class DomainMatrix:
         return self.convert_to(K)
 
     def unify(self, other):
+        """Unifies the domain of 2 Matrices, so that
+        they both belong to a common unified Domain
+
+        Parameters
+        ==========
+
+        other: other Domain Matrix to be unified
+
+        Returns
+        =======
+
+        Two Matrices that contain the elements of the input
+        matrices but they now belong to a unified Domain
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import ZZ, QQ, RR
+        >>> A = DomainMatrix([[1, 2, 3]], (1, 3), ZZ)
+        >>> B = DomainMatrix([[RR(1.2), RR(2.0), RR(3.4)]], (1, 3), RR)
+        >>> A.unify(B)
+        (DomainMatrix([[1.0, 2.0, 3.0]], (1, 3), RR), DomainMatrix([[1.2, 2.0, 3.4]], (1, 3), RR))
+
+        """
         K1 = self.domain
         K2 = other.domain
         if K1 == K2:
@@ -75,6 +172,21 @@ class DomainMatrix:
         return self, other
 
     def to_Matrix(self):
+        """ Converts an object of Domain Matrix class to
+        sympy's Matrix Class
+
+        Examples
+        ========
+
+        >>> from sympy import ZZ
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> A = DomainMatrix([[1, 2], [2, 3]], (2, 2), ZZ)
+        >>> A.to_Matrix()
+        Matrix([
+        [1, 2],
+        [2, 3]])
+
+        """
         from sympy.matrices.dense import MutableDenseMatrix
         rows_sympy = [[self.domain.to_sympy(e) for e in row] for row in self.rep]
         return MutableDenseMatrix(rows_sympy)
@@ -142,6 +254,19 @@ class DomainMatrix:
         return A.from_ddm(A.rep.matmul(B.rep))
 
     def pow(A, n):
+        """Return Matrix A raised to the power n
+        A ** n
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import ZZ
+        >>> A = DomainMatrix([[1, 3], [2, 1]], (2, 2), ZZ)
+        >>> pow(A, 3)
+        DomainMatrix([[19, 27], [18, 19]], (2, 2), ZZ)
+
+        """
         if n < 0:
             raise NotImplementedError('Negative powers')
         elif n == 0:
@@ -159,15 +284,63 @@ class DomainMatrix:
             return sqrtAn * sqrtAn
 
     def rref(self):
+        """Return reduced row-echelon form of a Domain matrix and indices of pivot vars.
+        Ensure that the Domain of the input Matrix is a field.
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> A = DomainMatrix([
+        ...     [1, QQ(1,2), 3],
+        ...     [2, QQ(3,4), 1],
+        ...     [QQ(-1,2), 2,0]], (3, 3), QQ)
+        >>> rref_matrix, rref_pivots = A.rref()
+        >>> rref_matrix
+        DomainMatrix([[1.0, 0.0, 0.0], [0, 1.0, 0.0], [0, 0.0, 1.0]], (3, 3), QQ)
+        >>> rref_pivots
+        (0, 1, 2)
+
+        """
         if not self.domain.is_Field:
             raise ValueError('Not a field')
         rref_ddm, pivots = self.rep.rref()
         return self.from_ddm(rref_ddm), tuple(pivots)
 
     def nullspace(self):
+        """Returns the Nullspace of a Domain Matrix.
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import ZZ
+        >>> A = DomainMatrix([
+        ... [1, -1],
+        ... [2, -2]], (2, 2), ZZ)
+        >>> A.nullspace()
+        DomainMatrix([[1.0, 1]], (1, 2), ZZ)
+
+        """
         return self.from_ddm(self.rep.nullspace())
 
     def inv(self):
+        """Returns the inverse of a Domain Matrix if the Domain is a field.
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> A = DomainMatrix([
+        ... [2, -1, 0],
+        ... [-1, 2, -1],
+        ... [0, 0, 2]], (3, 3), QQ)
+        >>> A.inv()
+        DomainMatrix([[0.66666666666666663, 0.33333333333333331, 0.16666666666666666], [0.33333333333333331, 0.66666666666666663, 0.33333333333333331], [0.0, 0.0, 0.5]], (3, 3), QQ)
+
+        """
         if not self.domain.is_Field:
             raise ValueError('Not a field')
         m, n = self.shape
@@ -177,18 +350,78 @@ class DomainMatrix:
         return self.from_ddm(inv)
 
     def det(self):
+        """Returns the determinant of a Domain Matrix.
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import ZZ
+        >>> A = DomainMatrix([
+        ... [2, -1, 0],
+        ... [-1, 2, -1],
+        ... [0, 0, 2]], (3, 3), ZZ)
+        >>> A.det()
+        mpz(6)
+
+        """
         m, n = self.shape
         if m != n:
             raise NonSquareMatrixError
         return self.rep.det()
 
     def lu(self):
+        """Returns (L, U, swaps) where L is a lower triangular matrix with unit diagonal, U is an upper triangular matrix,
+        and swaps is a list of row swap index pairs.
+        If A is the original matrix, then A = (L*U).permute(swaps),
+        and the row permutation matrix P such that P*A = L*U can be computed by P=eye(A.row).permute(swaps).
+
+        The domain of the matrix A must be a field.
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> A = DomainMatrix([
+        ... [2, -1, 0],
+        ... [-1, 2, -1],
+        ... [0, 0, 2]], (3, 3), QQ)
+        >>> L, U, swaps = A.lu()
+        >>> L
+        DomainMatrix([[1, 0, 0], [-0.5, 1, 0], [0.0, 0.0, 1]], (3, 3), QQ)
+        >>> U
+        DomainMatrix([[2, -1, 0], [0, 1.5, -1.0], [0, 0, 2.0]], (3, 3), QQ)
+        >>> swaps
+        []
+        >>> L*U == A
+        True
+
+        """
         if not self.domain.is_Field:
             raise ValueError('Not a field')
         L, U, swaps = self.rep.lu()
         return self.from_ddm(L), self.from_ddm(U), swaps
 
     def lu_solve(self, rhs):
+        """Solve the linear system Ax = rhs for x using LU decomposition
+        of the Domain Matrix A.
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> A = DomainMatrix([
+        ...     [2, -1, 0],
+        ...     [-1, 2, -1],
+        ...     [0, 0, 2]], (3, 3), QQ)
+        >>> b = DomainMatrix([[1],[4],[0]], (3, 1), QQ)
+        >>> x = A.lu_solve(b)
+        >>> x
+        DomainMatrix([[2.0], [3.0], [0.0]], (3, 1), QQ)
+
+        """
         if self.shape[0] != rhs.shape[0]:
             raise ShapeError("Shape")
         if not self.domain.is_Field:
@@ -197,6 +430,23 @@ class DomainMatrix:
         return self.from_ddm(sol)
 
     def charpoly(self):
+        """Computes characteristic polynomial det(x*I - M) where I is the identity matrix and
+         M is the input Domain Matrix
+        A PurePoly is returned, so using different variables for x does not affect the comparison or the polynomials:
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> A = DomainMatrix([
+        ...     [2, -1, 0],
+        ...     [-1, 2, -1],
+        ...     [0, 0, 2]], (3, 3), QQ)
+        >>> A.charpoly()
+        [mpq(1,1), mpq(-6,1), mpq(11,1), mpq(-6,1)]
+
+        """
         m, n = self.shape
         if m != n:
             raise NonSquareMatrixError("not square")
@@ -204,6 +454,17 @@ class DomainMatrix:
 
     @classmethod
     def eye(cls, n, domain):
+        """Return Identity matrix of size n x n, belonging to the specified domain
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> DomainMatrix.eye(3, QQ)
+        DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
+
+        """
         return cls.from_ddm(DDM.eye(n, domain))
 
     def __eq__(A, B):
