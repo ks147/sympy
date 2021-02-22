@@ -9,6 +9,7 @@ import re
 
 from sympy import (Basic, S, symbols, sqrt, sin, oo, Interval, exp, Lambda, pi,
                    Eq, log, Function, Rational)
+from sympy.codegen.array_utils import ArrayElementwiseApplyFunc
 
 from sympy.testing.pytest import XFAIL, SKIP
 
@@ -4374,11 +4375,28 @@ def test_sympy__tensor__array__array_derivatives__ArrayDerivative():
     arrder = ArrayDerivative(A, A, evaluate=False)
     assert _test_args(arrder)
 
+def test_sympy__tensor__array__expressions__array_expressions__ArraySymbol():
+    from sympy.tensor.array.expressions.array_expressions import ArraySymbol
+    m, n, k = symbols("m n k")
+    array = ArraySymbol("A", m, n, k, 2)
+    assert _test_args(array)
+
+def test_sympy__tensor__array__expressions__array_expressions__ArrayElement():
+    from sympy.tensor.array.expressions.array_expressions import ArrayElement
+    m, n, k = symbols("m n k")
+    ae = ArrayElement("A", (m, n, k, 2))
+    assert _test_args(ae)
 
 def test_sympy__tensor__array__expressions__array_expressions__ZeroArray():
     from sympy.tensor.array.expressions.array_expressions import ZeroArray
     m, n, k = symbols("m n k")
     za = ZeroArray(m, n, k, 2)
+    assert _test_args(za)
+
+def test_sympy__tensor__array__expressions__array_expressions__OneArray():
+    from sympy.tensor.array.expressions.array_expressions import OneArray
+    m, n, k = symbols("m n k")
+    za = OneArray(m, n, k, 2)
     assert _test_args(za)
 
 def test_sympy__tensor__functions__TensorProduct():
@@ -4865,6 +4883,12 @@ def test_sympy__codegen__array_utils__CodegenArrayPermuteDims():
     from sympy.codegen.array_utils import CodegenArrayPermuteDims
     A = MatrixSymbol("A", 4, 4)
     assert _test_args(CodegenArrayPermuteDims(A, (1, 0)))
+
+
+def test_sympy__codegen__array_utils__ArrayElementwiseApplyFunc():
+    from sympy.tensor.array.expressions.array_expressions import ArraySymbol
+    A = ArraySymbol("A", 4)
+    assert _test_args(ArrayElementwiseApplyFunc(exp, A))
 
 
 def test_sympy__codegen__ast__Assignment():
