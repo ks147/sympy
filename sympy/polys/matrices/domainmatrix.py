@@ -153,7 +153,7 @@ class DomainMatrix:
         ========
 
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> from sympy import ZZ, QQ, RR
+        >>> from sympy import ZZ, RR
         >>> A = DomainMatrix([[1, 2, 3]], (1, 3), ZZ)
         >>> B = DomainMatrix([[RR(1.2), RR(2.0), RR(3.4)]], (1, 3), RR)
         >>> A.unify(B)
