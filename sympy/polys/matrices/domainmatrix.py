@@ -128,9 +128,8 @@ class DomainMatrix:
         >>> A.convert_to(QQ)
         DomainMatrix([[3/2, 1], [6/5, 3/10]], (2, 2), QQ)
 
-        """        
+        """
         return self.from_rep(self.rep.convert_to(K))
-
 
     def to_field(self):
         K = self.domain.get_field()
@@ -330,7 +329,7 @@ class DomainMatrix:
         >>> A.nullspace()
         DomainMatrix([[1.0, 1]], (1, 2), ZZ)
 
-        """       
+        """
         return self.from_rep(self.rep.nullspace()[0])
 
 
@@ -474,7 +473,7 @@ class DomainMatrix:
         DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
 
         """
-       
+
         return cls.from_rep(DDM.eye(n, domain))
 
 
