@@ -36,14 +36,14 @@ class DomainMatrix:
 
     @classmethod
     def from_list_sympy(cls, nrows, ncols, rows, **kwargs):
-        """Converts a list to Domain Matrix
+        """Convert a list of lists of Expr into a DomainMatrix
 
         Examples
         ========
         Define a Domain Matrix on the field of Integers
 
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> A = DomainMatrix.from_list_sympy(1 , 2, [[1, 0]])
+        >>> A = DomainMatrix.from_list_sympy(1, 2, [[1, 0]])
         >>> A
         DomainMatrix([[1, 0]], (1, 2), ZZ)
 
@@ -74,24 +74,26 @@ class DomainMatrix:
 
         Examples
         ========
+
         Define a Domain Matrix on the field of Rationals
 
         >>> from sympy import Matrix, Rational
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> A = DomainMatrix.from_Matrix(Matrix([
-        ...     [Rational(1,2), Rational(3,4)],
-        ...     [2, Rational(1,5)],
-        ... ]))
+        >>> M = Matrix([
+        ... [Rational(1,2), Rational(3,4)],
+        ... [2, Rational(1,5)]])
+        >>> A = DomainMatrix.from_Matrix(M)
         >>> A
         DomainMatrix([[1/2, 3/4], [2, 1/5]], (2, 2), QQ)
+
 
         Define a Domain matrix on the field of Reals.
         >>> from sympy import Matrix
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> A = DomainMatrix.from_Matrix(Matrix([
-        ...     [1.0, 3.4],
-        ...     [2.4, 1]
-        ... ]))
+        >>> M = Matrix([
+        ... [1.0, 3.4],
+        ... [2.4, 1]])
+        >>> A = DomainMatrix.from_Matrix(M)
         >>> A
         DomainMatrix([[1.0, 3.4], [2.4, 1.0]], (2, 2), RR)
 
@@ -105,13 +107,12 @@ class DomainMatrix:
         return K, items_K
 
     def convert_to(self, K):
-        """ Converts an object of a given Domain to another specified
-        domain K
+        """ Change domain of self
 
         Parameters
         ==========
 
-        K: Matrix is to be converted to Domain K
+        K: Domain. The domain to convert the elements to.
 
         Examples
         ========
@@ -122,6 +123,11 @@ class DomainMatrix:
         >>> A.convert_to(QQ)
         DomainMatrix([[1, 3]], (1, 2), QQ)
 
+        See Also
+        ========
+
+        DomainMatrix.unify, DomainMatrix.convert_to
+
         """
         return self.from_rep(self.rep.convert_to(K))
 
@@ -130,8 +136,7 @@ class DomainMatrix:
         return self.convert_to(K)
 
     def unify(self, other):
-        """Unifies the domain of 2 Matrices, so that
-        they both belong to a common unified Domain
+        """Converts self and other to a common domain
 
         Parameters
         ==========
@@ -167,8 +172,7 @@ class DomainMatrix:
         return self, other
 
     def to_Matrix(self):
-        """ Converts an object of Domain Matrix class to
-        sympy's Matrix Class
+        """ Convert DomainMatrix to Matrix
 
         Examples
         ========
@@ -269,7 +273,9 @@ class DomainMatrix:
         return A.from_rep(A.rep.matmul(B.rep))
 
     def pow(A, n):
-        """Return Matrix A raised to the power n
+        """Return Matrix A raised to the power n,
+        n must be a non-negative integer
+
         A ** n
 
         Examples
@@ -385,12 +391,13 @@ class DomainMatrix:
         return self.rep.det()
 
     def lu(self):
-        """Returns (L, U, swaps) where L is a lower triangular matrix with unit diagonal, U is an upper triangular matrix,
-        and swaps is a list of row swap index pairs.
-        If A is the original matrix, then A = (L*U).permute(swaps),
-        and the row permutation matrix P such that P*A = L*U can be computed by P=eye(A.row).permute(swaps).
+        """LU decomposition of self
 
-        The domain of the matrix A must be a field.
+        Returns
+        =======
+
+        (L, U, swaps): where L is a lower triangular matrix with unit diagonal, U is an upper triangular matrix,
+        and swaps is a list of row swap index pairs.
 
         Examples
         ========
@@ -419,7 +426,7 @@ class DomainMatrix:
 
     def lu_solve(self, rhs):
         """Solve the linear system Ax = rhs for x using LU decomposition
-        of the Domain Matrix A.
+        of the DomainMatrix A.
 
         Examples
         ========
@@ -444,9 +451,7 @@ class DomainMatrix:
         return self.from_rep(sol)
 
     def charpoly(self):
-        """Computes characteristic polynomial det(x*I - M) where I is the identity matrix and
-         M is the input Domain Matrix
-        A PurePoly is returned, so using different variables for x does not affect the comparison or the polynomials:
+        """Computes characteristic polynomial of a square matrix
 
         Examples
         ========
@@ -458,7 +463,7 @@ class DomainMatrix:
         ...     [QQ(-1), QQ(2), QQ(-1)],
         ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
         >>> A.charpoly()
-         [1, -6, 11, -6]
+        [1, -6, 11, -6]
 
         """
         m, n = self.shape
