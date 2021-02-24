@@ -306,7 +306,12 @@ class DomainMatrix:
 
     def rref(self):
         """Return reduced row-echelon form of a Domain matrix and indices of pivot vars.
-        Ensure that the Domain of the input Matrix is a field.
+
+        Raises
+        ======
+
+         ValueError('Not a field')
+            if domain of self is not a field
 
         Examples
         ========
@@ -348,6 +353,12 @@ class DomainMatrix:
     def inv(self):
         """Returns the inverse of a Domain Matrix if the Domain is a field.
 
+        Raises
+        ======
+
+         ValueError: Not a field
+            if domain of self is not a field
+
         Examples
         ========
 
@@ -370,7 +381,7 @@ class DomainMatrix:
         return self.from_rep(inv)
 
     def det(self):
-        """Returns the determinant of a Domain Matrix.
+        """Returns the determinant of a square Domain Matrix.
 
         Examples
         ========
