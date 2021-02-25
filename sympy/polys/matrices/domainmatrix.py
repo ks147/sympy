@@ -37,9 +37,11 @@ class DomainMatrix:
     @classmethod
     def from_list_sympy(cls, nrows, ncols, rows, **kwargs):
         """Convert a list of lists of Expr into a DomainMatrix
+        using construct_domain
 
         Examples
         ========
+
         Define a Domain Matrix on the field of Integers
 
         >>> from sympy.polys.matrices import DomainMatrix
@@ -47,13 +49,10 @@ class DomainMatrix:
         >>> A
         DomainMatrix([[1, 0]], (1, 2), ZZ)
 
-        We now define a Domain Matrix on the field of Rational Numbers
+        See Also
+        ========
 
-        >>> from sympy import Rational
-        >>> from sympy.polys.matrices import DomainMatrix
-        >>> A = DomainMatrix.from_list_sympy(2, 2, [[Rational(1,2), Rational(3,4)],[2, Rational(1,5)]])
-        >>> A
-        DomainMatrix([[1/2, 3/4], [2, 1/5]], (2, 2), QQ)
+        polys.constructor.construct_domain
 
         """
         assert len(rows) == nrows
@@ -69,8 +68,7 @@ class DomainMatrix:
 
     @classmethod
     def from_Matrix(cls, M, **kwargs):
-        """Converts a Matrix to Domain Matrix of
-        suitable Domain
+        """Converts Matrix to DomainMatrix
 
         Examples
         ========
@@ -107,7 +105,7 @@ class DomainMatrix:
         return K, items_K
 
     def convert_to(self, K):
-        """ Change domain of self
+        """Change domain of self
 
         Parameters
         ==========
@@ -381,7 +379,7 @@ class DomainMatrix:
         return self.from_rep(inv)
 
     def det(self):
-        """Returns the determinant of a square Domain Matrix.
+        """Determinant of a square DomainMatrix.
 
         Examples
         ========
@@ -407,8 +405,7 @@ class DomainMatrix:
         Returns
         =======
 
-        (L, U, swaps): where L is a lower triangular matrix with unit diagonal, U is an upper triangular matrix,
-        and swaps is a list of row swap index pairs.
+        (L, U, swaps): where L is a lower triangular matrix with unit diagonal, U is an upper triangular                     matrix and swaps is a list of row swap index pairs.
 
         Examples
         ========
@@ -462,19 +459,17 @@ class DomainMatrix:
         return self.from_rep(sol)
 
     def charpoly(self):
-        """Computes characteristic polynomial of a square matrix
+        """Characteristic polynomial of a square matrix
 
         Examples
         ========
 
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> from sympy import QQ
-        >>> A = DomainMatrix([
-        ...     [QQ(2), QQ(-1), QQ(0)],
-        ...     [QQ(-1), QQ(2), QQ(-1)],
-        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
+        >>> from sympy import ZZ
+        >>> A = DomainMatrix([[ZZ(1), ZZ(2)],
+        ... [ZZ(3), ZZ(4)]], (2, 2), ZZ)
         >>> A.charpoly()
-        [1, -6, 11, -6]
+        [1, -5, -2]
 
         """
         m, n = self.shape
