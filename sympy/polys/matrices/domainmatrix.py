@@ -42,7 +42,7 @@ class DomainMatrix:
         Examples
         ========
 
-        Define a Domain Matrix on the field of Integers
+        Define a DomainMatrix on the field of Integers
 
         >>> from sympy.polys.matrices import DomainMatrix
         >>> A = DomainMatrix.from_list_sympy(1, 2, [[1, 0]])
@@ -73,7 +73,7 @@ class DomainMatrix:
         Examples
         ========
 
-        Define a Domain Matrix on the field of Rationals
+        Define a DomainMatrix on the field of Rationals
 
         >>> from sympy import Matrix, Rational
         >>> from sympy.polys.matrices import DomainMatrix
@@ -85,7 +85,7 @@ class DomainMatrix:
         DomainMatrix([[1/2, 3/4], [2, 1/5]], (2, 2), QQ)
 
 
-        Define a Domain matrix on the field of Reals.
+        Define a DomainMatrix on the field of Reals.
         >>> from sympy import Matrix
         >>> from sympy.polys.matrices import DomainMatrix
         >>> M = Matrix([
@@ -139,7 +139,7 @@ class DomainMatrix:
         Parameters
         ==========
 
-        other: other Domain Matrix to be unified
+        other: other DomainMatrix to be unified
 
         Returns
         =======
@@ -303,7 +303,7 @@ class DomainMatrix:
             return sqrtAn * sqrtAn
 
     def rref(self):
-        """Return reduced row-echelon form of a Domain matrix and indices of pivot vars.
+        """Return reduced row-echelon form of a DomainMatrix and indices of pivot vars.
 
         Raises
         ======
@@ -333,7 +333,7 @@ class DomainMatrix:
         return self.from_rep(rref_ddm), tuple(pivots)
 
     def nullspace(self):
-        """Returns the Nullspace of a Domain Matrix.
+        """Returns the Nullspace of a DomainMatrix.
 
         Examples
         ========
@@ -349,7 +349,7 @@ class DomainMatrix:
 
 
     def inv(self):
-        """Returns the inverse of a Domain Matrix if the Domain is a field.
+        """Returns the inverse of a DomainMatrix if the Domain is a field.
 
         Raises
         ======
