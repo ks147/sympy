@@ -100,6 +100,24 @@ class DomainMatrix:
 
     @classmethod
     def from_list_sympy(cls, nrows, ncols, rows, **kwargs):
+        """
+        Convert a list of lists of Expr into a DomainMatrix
+        using construct_domain
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> A = DomainMatrix.from_list_sympy(1, 2, [[1, 0]])
+        >>> A
+        DomainMatrix([[1, 0]], (1, 2), ZZ)
+
+        See Also
+        ========
+
+        polys.constructor.construct_domain
+
+        """
         assert len(rows) == nrows
         assert all(len(row) == ncols for row in rows)
 
@@ -113,6 +131,21 @@ class DomainMatrix:
 
     @classmethod
     def from_Matrix(cls, M, **kwargs):
+        """Converts Matrix to DomainMatrix
+
+        Examples
+        ========
+
+        >>> from sympy import Matrix
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> M = Matrix([
+        ... [1.0, 3.4],
+        ... [2.4, 1]])
+        >>> A = DomainMatrix.from_Matrix(M)
+        >>> A
+        DomainMatrix([[1.0, 3.4], [2.4, 1.0]], (2, 2), RR)
+
+        """
         return cls.from_list_sympy(*M.shape, M.tolist(), **kwargs)
 
     @classmethod
@@ -122,7 +155,7 @@ class DomainMatrix:
 
     def convert_to(self, K):
         r"""
-        Returns a DomainMatrix with the desired domain or field
+        Change the domain of DomainMatrix to desired domain or field
 
         Parameters
         ==========
@@ -226,7 +259,7 @@ class DomainMatrix:
 
     def to_Matrix(self):
         r"""
-        Returns a MutableDenseMatrix for a DomainMatrix.
+        Convert DomainMatrix to Matrix
 
         Returns
         =======
@@ -267,7 +300,7 @@ class DomainMatrix:
 
     def hstack(A, B):
         r"""
-        Returns a DomainMatrix formed by stacking the rows horizontally.
+        Horizontally stacks 2 Domain Matrices.
 
         Parameters
         ==========
@@ -284,17 +317,15 @@ class DomainMatrix:
         Examples
         ========
 
-        >>> from sympy import ZZ
+        >>> from sympy import ZZ, QQ
         >>> from sympy.polys.matrices import DomainMatrix
         >>> domainmatrix1 = DomainMatrix([
-        ...    [ZZ(1), ZZ(2)],
-        ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
+        ...    [ZZ(1), ZZ(2), ZZ(3)]], (1, 3), ZZ)
         >>> domainmatrix2 = DomainMatrix([
-        ...    [ZZ(4), ZZ(3)],
-        ...    [ZZ(2), ZZ(1)]], (2, 2), ZZ)
+        ...    [QQ(-1, 2), QQ(1, 2), QQ(1, 3)]],(1, 3), QQ)
 
         >>> domainmatrix1.hstack(domainmatrix2)
-        DomainMatrix([[1, 2, 4, 3], [3, 4, 2, 1]], (2, 4), ZZ)
+        DomainMatrix([[1, 2, 3, -1/2, 1/2, 1/3]], (1, 6), QQ)
 
         See Also
         ========
@@ -625,7 +656,7 @@ class DomainMatrix:
 
     def rref(self):
         r"""
-        Returns reduced-row echelon form and list of pivots for the DomainMatrix
+        Return reduced-row echelon form and list of pivots for the DomainMatrix
 
         Returns
         =======
@@ -642,22 +673,21 @@ class DomainMatrix:
         Examples
         ========
 
-        >>> from sympy import ZZ, QQ
+        >>> from sympy import QQ
         >>> from sympy.polys.matrices import DomainMatrix
         >>> domainmatrix = DomainMatrix([
-        ...    [ZZ(1), ZZ(1)],
-        ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
-        >>> dMF = domainmatrix.convert_to(QQ)
-        >>> dMF
-        DomainMatrix([[1, 1], [0, 1]], (2, 2), QQ)
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
 
-        >>> dMF.rref()
-        (DomainMatrix([[1, 0], [0, 1]], (2, 2), QQ), (0, 1))
+        >>> rref_matrix, rref_pivots = domainmatrix.rref()
+        >>> rref_matrix
+        DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
+        >>> rref_pivots
+        (0, 1, 2)
 
         See Also
         ========
-
-        :py:meth:`~.convert_to`
 
         :py:meth:`~.lu`
 
@@ -697,7 +727,7 @@ class DomainMatrix:
 
     def inv(self):
         r"""
-        Finds the inverse of the DomainMatrix if exists
+        Returns the inverse of the DomainMatrix if exists
 
         Returns
         =======
@@ -909,6 +939,18 @@ class DomainMatrix:
 
     @classmethod
     def eye(cls, n, domain):
+        """Return Identity matrix of size n x n, belonging to the specified domain
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> DomainMatrix.eye(3, QQ)
+        DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
+
+        """
+
         return cls.from_rep(DDM.eye(n, domain))
 
     def __eq__(A, B):
