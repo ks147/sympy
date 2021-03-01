@@ -46,18 +46,18 @@ class DomainMatrix:
     >>> Matrix1 = Matrix([
     ...    [1, 2],
     ...    [3, 4]])
-    >>> domainmatrix = DomainMatrix.from_Matrix(Matrix1)
-    >>> domainmatrix
+    >>> A = DomainMatrix.from_Matrix(Matrix1)
+    >>> A
     DomainMatrix([[1, 2], [3, 4]], (2, 2), ZZ)
 
     Driectly forming a DomainMatrix:
 
     >>> from sympy import ZZ
     >>> from sympy.polys.matrices import DomainMatrix
-    >>> domainmatrix = DomainMatrix([
+    >>> A = DomainMatrix([
     ...    [ZZ(1), ZZ(2)],
     ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-    >>> domainmatrix
+    >>> A
     DomainMatrix([[1, 2], [3, 4]], (2, 2), ZZ)
 
     See Also
@@ -100,6 +100,23 @@ class DomainMatrix:
 
     @classmethod
     def from_list_sympy(cls, nrows, ncols, rows, **kwargs):
+        r"""
+        Convert a list of lists of Expr into a DomainMatrix using construct_domain
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> A = DomainMatrix.from_list_sympy(1, 2, [[1, 0]])
+        >>> A
+        DomainMatrix([[1, 0]], (1, 2), ZZ)
+
+        See Also
+        ========
+
+        polys.constructor.construct_domain
+
+        """
         assert len(rows) == nrows
         assert all(len(row) == ncols for row in rows)
 
@@ -113,6 +130,22 @@ class DomainMatrix:
 
     @classmethod
     def from_Matrix(cls, M, **kwargs):
+        r"""
+        Convert Matrix to DomainMatrix
+
+        Examples
+        ========
+
+        >>> from sympy import Matrix
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> M = Matrix([
+        ...    [1.0, 3.4],
+        ...    [2.4, 1]])
+        >>> A = DomainMatrix.from_Matrix(M)
+        >>> A
+        DomainMatrix([[1.0, 3.4], [2.4, 1.0]], (2, 2), RR)
+
+        """
         return cls.from_list_sympy(*M.shape, M.tolist(), **kwargs)
 
     @classmethod
@@ -122,7 +155,7 @@ class DomainMatrix:
 
     def convert_to(self, K):
         r"""
-        Returns a DomainMatrix with the desired domain or field
+        Change the domain of DomainMatrix to desired domain or field
 
         Parameters
         ==========
@@ -136,15 +169,15 @@ class DomainMatrix:
             DomainMatrix with the desired domain or field
 
         Examples
-        =====
+        ========
 
         >>> from sympy import ZZ, ZZ_I
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
 
-        >>> domainmatrix.convert_to(ZZ_I)
+        >>> A.convert_to(ZZ_I)
         DomainMatrix([[1, 2], [3, 4]], (2, 2), ZZ_I)
 
         """
@@ -165,11 +198,11 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
 
-        >>> domainmatrix.to_field()
+        >>> A.to_field()
         DomainMatrix([[1, 2], [3, 4]], (2, 2), QQ)
 
         """
@@ -196,16 +229,13 @@ class DomainMatrix:
 
         >>> from sympy import ZZ, QQ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix1 = DomainMatrix([
-        ...    [ZZ(1), ZZ(2)],
-        ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-        >>> domainmatrix2 = domainmatrix1.convert_to(QQ)
+        >>> A = DomainMatrix([
+        ...    [ZZ(1), ZZ(2), ZZ(3)]], (1, 3), ZZ)
+        >>> B = DomainMatrix([
+        ...    [QQ(1, 2), QQ(3, 5)]], (1, 2), QQ)
 
-        >>> dM1_new, dM2_new = domainmatrix1.unify(domainmatrix2)
-        >>> dM1_new
-        DomainMatrix([[1, 2], [3, 4]], (2, 2), QQ)
-        >>> dM2_new
-        DomainMatrix([[1, 2], [3, 4]], (2, 2), QQ)
+        >>> A.unify(B)
+        (DomainMatrix([[1, 2, 3]], (1, 3), QQ), DomainMatrix([[1/2, 3/5]], (1, 2), QQ))
 
         See Also
         ========
@@ -226,7 +256,7 @@ class DomainMatrix:
 
     def to_Matrix(self):
         r"""
-        Returns a MutableDenseMatrix for a DomainMatrix.
+        Convert DomainMatrix to Matrix
 
         Returns
         =======
@@ -239,11 +269,11 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
 
-        >>> domainmatrix.to_Matrix()
+        >>> A.to_Matrix()
         Matrix([
             [1, 2],
             [3, 4]])
@@ -267,7 +297,7 @@ class DomainMatrix:
 
     def hstack(A, B):
         r"""
-        Returns a DomainMatrix formed by stacking the rows horizontally.
+        Horizontally stacks 2 Domain Matrices.
 
         Parameters
         ==========
@@ -284,17 +314,15 @@ class DomainMatrix:
         Examples
         ========
 
-        >>> from sympy import ZZ
+        >>> from sympy import ZZ, QQ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix1 = DomainMatrix([
-        ...    [ZZ(1), ZZ(2)],
-        ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-        >>> domainmatrix2 = DomainMatrix([
-        ...    [ZZ(4), ZZ(3)],
-        ...    [ZZ(2), ZZ(1)]], (2, 2), ZZ)
+        >>> A = DomainMatrix([
+        ...    [ZZ(1), ZZ(2), ZZ(3)]], (1, 3), ZZ)
+        >>> B = DomainMatrix([
+        ...    [QQ(-1, 2), QQ(1, 2), QQ(1, 3)]],(1, 3), QQ)
 
-        >>> domainmatrix1.hstack(domainmatrix2)
-        DomainMatrix([[1, 2, 4, 3], [3, 4, 2, 1]], (2, 4), ZZ)
+        >>> A.hstack(B)
+        DomainMatrix([[1, 2, 3, -1/2, 1/2, 1/3]], (1, 6), QQ)
 
         See Also
         ========
@@ -369,14 +397,14 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix1 = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-        >>> domainmatrix2 = DomainMatrix([
+        >>> B = DomainMatrix([
         ...    [ZZ(4), ZZ(3)],
         ...    [ZZ(2), ZZ(1)]], (2, 2), ZZ)
 
-        >>> domainmatrix1.add(domainmatrix2)
+        >>> A.add(B)
         DomainMatrix([[5, 5], [5, 5]], (2, 2), ZZ)
 
         See Also
@@ -423,14 +451,14 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix1 = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-        >>> domainmatrix2 = DomainMatrix([
+        >>> B = DomainMatrix([
         ...    [ZZ(4), ZZ(3)],
         ...    [ZZ(2), ZZ(1)]], (2, 2), ZZ)
 
-        >>> domainmatrix1.sub(domainmatrix2)
+        >>> A.sub(B)
         DomainMatrix([[-3, -1], [1, 3]], (2, 2), ZZ)
 
         See Also
@@ -467,11 +495,11 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
 
-        >>> domainmatrix.neg()
+        >>> A.neg()
         DomainMatrix([[-1, -2], [-3, -4]], (2, 2), ZZ)
 
         """
@@ -500,14 +528,14 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix1 = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-        >>> domainmatrix2 = DomainMatrix([
+        >>> B = DomainMatrix([
         ...    [ZZ(1), ZZ(1)],
         ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
 
-        >>> domainmatrix1.mul(domainmatrix2)
+        >>> A.mul(B)
         DomainMatrix([[DomainMatrix([[1, 1], [0, 1]], (2, 2), ZZ),
         DomainMatrix([[2, 2], [0, 2]], (2, 2), ZZ)],
         [DomainMatrix([[3, 3], [0, 3]], (2, 2), ZZ),
@@ -542,14 +570,14 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix1 = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-        >>> domainmatrix2 = DomainMatrix([
+        >>> B = DomainMatrix([
         ...    [ZZ(1), ZZ(1)],
         ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
 
-        >>> domainmatrix1.matmul(domainmatrix2)
+        >>> A.matmul(B)
         DomainMatrix([[1, 3], [3, 7]], (2, 2), ZZ)
 
         See Also
@@ -594,11 +622,11 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(1)],
         ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
 
-        >>> domainmatrix.pow(2)
+        >>> A.pow(2)
         DomainMatrix([[1, 2], [0, 1]], (2, 2), ZZ)
 
         See Also
@@ -642,17 +670,18 @@ class DomainMatrix:
         Examples
         ========
 
-        >>> from sympy import ZZ, QQ
+        >>> from sympy import QQ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
-        ...    [ZZ(1), ZZ(1)],
-        ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
-        >>> dMF = domainmatrix.convert_to(QQ)
-        >>> dMF
-        DomainMatrix([[1, 1], [0, 1]], (2, 2), QQ)
+        >>> A = DomainMatrix([
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
 
-        >>> dMF.rref()
-        (DomainMatrix([[1, 0], [0, 1]], (2, 2), QQ), (0, 1))
+        >>> rref_matrix, rref_pivots = A.rref()
+        >>> rref_matrix
+        DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
+        >>> rref_pivots
+        (0, 1, 2)
 
         See Also
         ========
@@ -680,17 +709,13 @@ class DomainMatrix:
         Examples
         ========
 
-        >>> from sympy import ZZ, QQ
+        >>> from sympy import QQ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
-        ...    [ZZ(1), ZZ(1)],
-        ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
-        >>> dMF = domainmatrix.convert_to(QQ)
-        >>> dMF
-        DomainMatrix([[1, 1], [0, 1]], (2, 2), QQ)
-
-        >>> dMF.nullspace()
-        DomainMatrix([], (0, 2), QQ)
+        >>> A = DomainMatrix([
+        ...    [QQ(1), QQ(-1)],
+        ...    [QQ(2), QQ(-2)]], (2, 2), QQ)
+        >>> A.nullspace()
+        DomainMatrix([[1, 1]], (1, 2), QQ)
 
         """
         return self.from_rep(self.rep.nullspace()[0])
@@ -717,17 +742,14 @@ class DomainMatrix:
         Examples
         ========
 
-        >>> from sympy import ZZ, QQ
+        >>> from sympy import QQ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
-        ...    [ZZ(1), ZZ(1)],
-        ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
-        >>> dMF = domainmatrix.convert_to(QQ)
-        >>> dMF
-        DomainMatrix([[1, 1], [0, 1]], (2, 2), QQ)
-
-        >>> dMF.inv()
-        DomainMatrix([[1, -1], [0, 1]], (2, 2), QQ)
+        >>> A = DomainMatrix([
+        ...     [QQ(2), QQ(-1), QQ(0)],
+        ...     [QQ(-1), QQ(2), QQ(-1)],
+        ...     [QQ(0), QQ(0), QQ(2)]], (3, 3), QQ)
+        >>> A.inv()
+        DomainMatrix([[2/3, 1/3, 1/6], [1/3, 2/3, 1/3], [0, 0, 1/2]], (3, 3), QQ)
 
         See Also
         ========
@@ -764,11 +786,11 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
 
-        >>> domainmatrix.det()
+        >>> A.det()
         -2
 
         """
@@ -797,18 +819,13 @@ class DomainMatrix:
         Examples
         ========
 
-        >>> from sympy import ZZ, QQ
+        >>> from sympy import QQ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
-        ...    [ZZ(1), ZZ(2)],
-        ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-        >>> dMF = domainmatrix.convert_to(QQ)
-        >>> dMF
-        DomainMatrix([[1, 2], [3, 4]], (2, 2), QQ)
-
-        >>> dMF.lu()
-        (DomainMatrix([[1, 0], [3, 1]], (2, 2), QQ),
-        DomainMatrix([[1, 2], [0, -2]], (2, 2), QQ), [])
+        >>> A = DomainMatrix([
+        ...    [QQ(1), QQ(-1)],
+        ...    [QQ(2), QQ(-2)]], (2, 2), QQ)
+        >>> A.lu()
+        (DomainMatrix([[1, 0], [2, 1]], (2, 2), QQ), DomainMatrix([[1, -1], [0, 0]], (2, 2), QQ), [])
 
         See Also
         ========
@@ -850,14 +867,14 @@ class DomainMatrix:
 
         >>> from sympy import QQ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix1 = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [QQ(1), QQ(2)],
         ...    [QQ(3), QQ(4)]], (2, 2), QQ)
-        >>> domainmatrix2 = DomainMatrix([
+        >>> B = DomainMatrix([
         ...    [QQ(1), QQ(1)],
         ...    [QQ(0), QQ(1)]], (2, 2), QQ)
 
-        >>> domainmatrix1.lu_solve(domainmatrix2)
+        >>> A.lu_solve(B)
         DomainMatrix([[-2, -1], [3/2, 1]], (2, 2), QQ)
 
         See Also
@@ -894,11 +911,11 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
 
-        >>> domainmatrix.charpoly()
+        >>> A.charpoly()
         [1, -5, -2]
 
         """
@@ -938,16 +955,16 @@ class DomainMatrix:
 
         >>> from sympy import ZZ
         >>> from sympy.polys.matrices import DomainMatrix
-        >>> domainmatrix1 = DomainMatrix([
+        >>> A = DomainMatrix([
         ...    [ZZ(1), ZZ(2)],
         ...    [ZZ(3), ZZ(4)]], (2, 2), ZZ)
-        >>> domainmatrix2 = DomainMatrix([
+        >>> B = DomainMatrix([
         ...    [ZZ(1), ZZ(1)],
         ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
 
-        >>> domainmatrix1.__eq__(domainmatrix1)
+        >>> A.__eq__(A)
         True
-        >>> domainmatrix1.__eq__(domainmatrix2)
+        >>> A.__eq__(B)
         False
 
         """
