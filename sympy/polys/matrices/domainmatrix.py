@@ -39,6 +39,18 @@ class DomainMatrix:
         """Convert a list of lists of Expr into a DomainMatrix
         using construct_domain
 
+        Parameters
+        ==========
+
+        nrows: number of rows
+        ncols: number of columns
+        rows: list of lists
+
+        Returns
+        =======
+
+        DomainMatrix containing elements of rows
+
         Examples
         ========
 
@@ -70,6 +82,16 @@ class DomainMatrix:
     def from_Matrix(cls, M, **kwargs):
         """Converts Matrix to DomainMatrix
 
+        Parameters
+        ==========
+
+        M: Matrix
+
+        Returns
+        =======
+
+        Returns DomainMatrix with identical elements as M
+
         Examples
         ========
 
@@ -94,6 +116,11 @@ class DomainMatrix:
         >>> A = DomainMatrix.from_Matrix(M)
         >>> A
         DomainMatrix([[1.0, 3.4], [2.4, 1.0]], (2, 2), RR)
+
+        See Also
+        ========
+
+        :py:class:~.Matrix.
 
         """
         return cls.from_list_sympy(*M.shape, M.tolist(), **kwargs)
