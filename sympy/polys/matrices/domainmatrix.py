@@ -519,7 +519,7 @@ class DomainMatrix:
         """
 
         return cls.from_rep(DDM.eye(n, domain))
-      
+
     @classmethod
     def zeros(cls, shape, domain):
         """Returns a zero DomainMatrix of size shape, belonging to the specified domain
