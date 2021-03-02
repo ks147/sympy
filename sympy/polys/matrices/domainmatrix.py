@@ -964,8 +964,8 @@ class DomainMatrix:
         DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
 
         """
-
-        return cls.from_rep(DDM.eye(n, domain))    
+        return cls.from_rep(DDM.eye(n, domain)) 
+    
     @classmethod
     def zeros(cls, shape, domain):
         """Returns a zero DomainMatrix of size shape, belonging to the specified domain
