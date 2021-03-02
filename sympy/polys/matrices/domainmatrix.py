@@ -103,6 +103,18 @@ class DomainMatrix:
         r"""
         Convert a list of lists of Expr into a DomainMatrix using construct_domain
 
+        Parameters
+        ==========
+
+        nrows: number of rows
+        ncols: number of columns
+        rows: list of lists
+
+        Returns
+        =======
+
+        DomainMatrix containing elements of rows
+
         Examples
         ========
 
@@ -133,6 +145,16 @@ class DomainMatrix:
         r"""
         Convert Matrix to DomainMatrix
 
+        Parameters
+        ==========
+
+        M: Matrix
+
+        Returns
+        =======
+
+        Returns DomainMatrix with identical elements as M
+
         Examples
         ========
 
@@ -144,6 +166,11 @@ class DomainMatrix:
         >>> A = DomainMatrix.from_Matrix(M)
         >>> A
         DomainMatrix([[1.0, 3.4], [2.4, 1.0]], (2, 2), RR)
+
+        See Also
+        ========
+
+        :py:class:~.Matrix.
 
         """
         return cls.from_list_sympy(*M.shape, M.tolist(), **kwargs)
@@ -927,6 +954,22 @@ class DomainMatrix:
     @classmethod
     def eye(cls, n, domain):
         return cls.from_rep(DDM.eye(n, domain))
+    
+    @classmethod
+    def zeros(cls, shape, domain):
+        """Returns a zero DomainMatrix of size shape, belonging to the specified domain
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> DomainMatrix.zeros((2, 3), QQ)
+        DomainMatrix([[0, 0, 0], [0, 0, 0]], (2, 3), QQ)
+
+        """
+
+        return cls.from_rep(DDM.zeros(shape, domain))
 
     def __eq__(A, B):
         r"""
@@ -961,12 +1004,11 @@ class DomainMatrix:
         >>> B = DomainMatrix([
         ...    [ZZ(1), ZZ(1)],
         ...    [ZZ(0), ZZ(1)]], (2, 2), ZZ)
-
         >>> A.__eq__(A)
         True
         >>> A.__eq__(B)
         False
-
+        
         """
         if not isinstance(B, DomainMatrix):
             return NotImplemented
