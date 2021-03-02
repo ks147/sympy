@@ -953,6 +953,18 @@ class DomainMatrix:
 
     @classmethod
     def eye(cls, n, domain):
+        """Return Identity matrix of size n x n, belonging to the specified domain
+
+        Examples
+        ========
+
+        >>> from sympy.polys.matrices import DomainMatrix
+        >>> from sympy import QQ
+        >>> DomainMatrix.eye(3, QQ)
+        DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
+
+        """
+
         return cls.from_rep(DDM.eye(n, domain))
     
     @classmethod
