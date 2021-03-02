@@ -953,7 +953,8 @@ class DomainMatrix:
 
     @classmethod
     def eye(cls, n, domain):
-        """Return Identity matrix of size n x n, belonging to the specified domain
+        r"""
+        Return identity matrix of size n
 
         Examples
         ========
@@ -964,8 +965,8 @@ class DomainMatrix:
         DomainMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]], (3, 3), QQ)
 
         """
-        return cls.from_rep(DDM.eye(n, domain)) 
-    
+        return cls.from_rep(DDM.eye(n, domain))
+
     @classmethod
     def zeros(cls, shape, domain):
         """Returns a zero DomainMatrix of size shape, belonging to the specified domain
@@ -1019,7 +1020,7 @@ class DomainMatrix:
         True
         >>> A.__eq__(B)
         False
-        
+
         """
         if not isinstance(B, DomainMatrix):
             return NotImplemented
