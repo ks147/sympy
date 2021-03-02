@@ -1536,8 +1536,8 @@ def _solve_exponential(lhs, rhs, symbol, domain):
     a_term = a.as_independent(symbol)[1]
     b_term = b.as_independent(symbol)[1]
 
-    a_base, a_exp = a_term.base, a_term.exp
-    b_base, b_exp = b_term.base, b_term.exp
+    a_base, a_exp = a_term.as_base_exp()
+    b_base, b_exp = b_term.as_base_exp()
 
     from sympy.functions.elementary.complexes import im
 
@@ -3223,9 +3223,9 @@ def substitution(system, symbols, result=[{}], known_symbols=[],
     new_result_complex, solve_call2, cnd_call2 = _solve_using_known_values(
         old_result, solveset_complex)
 
-    # when `total_solveset_call` is equals to `total_conditionset`
-    # means solvest fails to solve all the eq.
-    # return conditionset in this case
+    # If total_solveset_call is equal to total_conditionset
+    # then solveset failed to solve all of the equations.
+    # In this case we return a ConditionSet here.
     total_conditionset += (cnd_call1 + cnd_call2)
     total_solveset_call += (solve_call1 + solve_call2)
 

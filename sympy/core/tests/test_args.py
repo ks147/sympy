@@ -8,8 +8,7 @@ import os
 import re
 
 from sympy import (Basic, S, symbols, sqrt, sin, oo, Interval, exp, Lambda, pi,
-                   Eq, log, Function, Rational)
-from sympy.codegen.array_utils import ArrayElementwiseApplyFunc
+                   Eq, log, Function, Rational, Q)
 
 from sympy.testing.pytest import XFAIL, SKIP
 
@@ -18,6 +17,7 @@ a, b, c, x, y, z = symbols('a,b,c,x,y,z')
 
 whitelist = [
      "sympy.assumptions.predicates",    # tested by test_predicates()
+     "sympy.assumptions.relation.equality",    # tested by test_predicates()
 ]
 
 def test_all_classes_are_tested():
@@ -33,9 +33,6 @@ def test_all_classes_are_tested():
     for root, dirs, files in os.walk(sympy_path):
         module = root.replace(prefix, "").replace(os.sep, ".")
 
-        if module in whitelist:
-            continue
-
         for file in files:
             if file.startswith(("_", "test_", "bench_")):
                 continue
@@ -46,6 +43,10 @@ def test_all_classes_are_tested():
                 text = f.read()
 
             submodule = module + '.' + file[:-3]
+
+            if any(submodule.startswith(wpath) for wpath in whitelist):
+                continue
+
             names = re_cls.findall(text)
 
             if not names:
@@ -112,6 +113,13 @@ def test_predicates():
 def test_sympy__assumptions__assume__UndefinedPredicate():
     from sympy.assumptions.assume import Predicate
     assert _test_args(Predicate("test"))
+
+@SKIP('abstract class')
+def test_sympy__assumptions__relation__binrel__BinaryRelation():
+    pass
+
+def test_sympy__assumptions__relation__binrel__AppliedBinaryRelation():
+    assert _test_args(Q.eq(1, 2))
 
 def test_sympy__assumptions__sathandlers__UnevaluatedOnFree():
     from sympy.assumptions.sathandlers import UnevaluatedOnFree
@@ -4851,42 +4859,42 @@ def test_sympy__physics__optics__medium__Medium():
     assert _test_args(Medium('m'))
 
 
-def test_sympy__codegen__array_utils__CodegenArrayContraction():
-    from sympy.codegen.array_utils import CodegenArrayContraction
+def test_sympy__tensor__array__expressions__array_expressions__ArrayContraction():
+    from sympy.tensor.array.expressions.array_expressions import ArrayContraction
     from sympy import IndexedBase
     A = symbols("A", cls=IndexedBase)
-    assert _test_args(CodegenArrayContraction(A, (0, 1)))
+    assert _test_args(ArrayContraction(A, (0, 1)))
 
 
-def test_sympy__codegen__array_utils__CodegenArrayDiagonal():
-    from sympy.codegen.array_utils import CodegenArrayDiagonal
+def test_sympy__tensor__array__expressions__array_expressions__ArrayDiagonal():
+    from sympy.tensor.array.expressions.array_expressions import ArrayDiagonal
     from sympy import IndexedBase
     A = symbols("A", cls=IndexedBase)
-    assert _test_args(CodegenArrayDiagonal(A, (0, 1)))
+    assert _test_args(ArrayDiagonal(A, (0, 1)))
 
 
-def test_sympy__codegen__array_utils__CodegenArrayTensorProduct():
-    from sympy.codegen.array_utils import CodegenArrayTensorProduct
+def test_sympy__tensor__array__expressions__array_expressions__ArrayTensorProduct():
+    from sympy.tensor.array.expressions.array_expressions import ArrayTensorProduct
     from sympy import IndexedBase
     A, B = symbols("A B", cls=IndexedBase)
-    assert _test_args(CodegenArrayTensorProduct(A, B))
+    assert _test_args(ArrayTensorProduct(A, B))
 
 
-def test_sympy__codegen__array_utils__CodegenArrayElementwiseAdd():
-    from sympy.codegen.array_utils import CodegenArrayElementwiseAdd
+def test_sympy__tensor__array__expressions__array_expressions__ArrayAdd():
+    from sympy.tensor.array.expressions.array_expressions import ArrayAdd
     from sympy import IndexedBase
     A, B = symbols("A B", cls=IndexedBase)
-    assert _test_args(CodegenArrayElementwiseAdd(A, B))
+    assert _test_args(ArrayAdd(A, B))
 
 
-def test_sympy__codegen__array_utils__CodegenArrayPermuteDims():
-    from sympy.codegen.array_utils import CodegenArrayPermuteDims
+def test_sympy__tensor__array__expressions__array_expressions__PermuteDims():
+    from sympy.tensor.array.expressions.array_expressions import PermuteDims
     A = MatrixSymbol("A", 4, 4)
-    assert _test_args(CodegenArrayPermuteDims(A, (1, 0)))
+    assert _test_args(PermuteDims(A, (1, 0)))
 
 
-def test_sympy__codegen__array_utils__ArrayElementwiseApplyFunc():
-    from sympy.tensor.array.expressions.array_expressions import ArraySymbol
+def test_sympy__tensor__array__expressions__array_expressions__ArrayElementwiseApplyFunc():
+    from sympy.tensor.array.expressions.array_expressions import ArraySymbol, ArrayElementwiseApplyFunc
     A = ArraySymbol("A", 4)
     assert _test_args(ArrayElementwiseApplyFunc(exp, A))
 
