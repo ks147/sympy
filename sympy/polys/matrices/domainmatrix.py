@@ -27,13 +27,13 @@ class DomainMatrix:
     Explanation
     ===========
 
-    DomainMatrix uses "domain elements" for its internal representation
+    DomainMatrix uses :py:class:`~.Domain` for its internal representation
     which makes it more faster for many common operations
     than current sympy Matrix class, but this advantage makes it not
     entirely compatible with Matrix.
     DomainMatrix could be found analogous to numpy arrays with "dtype".
-    In the DomainMatrix, each matrix has a domain such as ZZ(Integers)
-    or QQ<sqrt(2)>[Algebraic Number Field].
+    In the DomainMatrix, each matrix has a domain such as :ref:`ZZ`
+    or  :ref:`QQ(a)`.
 
 
     Examples
@@ -63,9 +63,7 @@ class DomainMatrix:
     See Also
     ========
 
-    :py:class:`~.ddm`
-    :py:class:`~.Domain`
-    :py:class:`~.Poly`
+    :py:class:`~.ddm`, :py:class:`~.Domain`, :py:class:`~.Poly`
 
     """
 
@@ -437,9 +435,7 @@ class DomainMatrix:
         See Also
         ========
 
-        :py:meth:`~.sub`
-
-        :py:meth:`~.matmul`
+        :py:meth:`~.sub`, :py:meth:`~.matmul`
 
         """
         if A.shape != B.shape:
@@ -491,9 +487,7 @@ class DomainMatrix:
         See Also
         ========
 
-        :py:meth:`~.add`
-
-        :py:meth:`~.matmul`
+        :py:meth:`~.add`, :py:meth:`~.matmul`
 
         """
         if A.shape != B.shape:
@@ -610,13 +604,7 @@ class DomainMatrix:
         See Also
         ========
 
-        :py:meth:`~.mul`
-
-        :py:meth:`~.pow`
-
-        :py:meth:`~.add`
-
-        :py:meth:`~.sub`
+        :py:meth:`~.mul`, :py:meth:`~.pow`, :py:meth:`~.add`, :py:meth:`~.sub`
 
         """
         return A.from_rep(A.rep.matmul(B.rep))
@@ -713,9 +701,7 @@ class DomainMatrix:
         See Also
         ========
 
-        :py:meth:`~.convert_to`
-
-        :py:meth:`~.lu`
+        :py:meth:`~.convert_to`, :py:meth:`~.lu`
 
         """
         if not self.domain.is_Field:
@@ -919,7 +905,9 @@ class DomainMatrix:
 
     def charpoly(self):
         r"""
-        Returns the coefficients of the characteristic polynomial of the DomainMatrix
+        Returns the coefficients of the characteristic polynomial
+        of the DomainMatrix. These elements will be domain elements.
+        The domain of the elements will be same as domain of the DomainMatrix.
 
         Returns
         =======
