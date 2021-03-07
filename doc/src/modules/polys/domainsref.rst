@@ -338,3 +338,18 @@ Dense polynomials
 .. _gcd: https://en.wikipedia.org/wiki/Greatest_common_divisor
 .. _field of fractions: https://en.wikipedia.org/wiki/Field_of_fractions
 .. _ring of integers: https://en.wikipedia.org/wiki/Ring_of_integers
+
+DomainMatrix
+============
+
+.. currentmodule:: sympy.polys.matrices
+
+.. autoclass:: DomainMatrix
+   :members:
+
+DDM
+===
+.. currentmodule:: sympy.polys.matrices.ddm
+
+.. autoclass:: DDM
+   :members:

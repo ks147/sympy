@@ -63,13 +63,13 @@ class DomainMatrix:
     See Also
     ========
 
-    :py:class:`~.ddm`, :py:class:`~.Domain`, :py:class:`~.Poly`
+    :py:class:`~.DDM`, :py:class:`~.Domain`, :py:class:`~.Poly`
 
     """
 
     def __init__(self, rows, shape, domain):
         """
-        Creates a :py:class:~.DomainMatrix.
+        Creates a :py:class:`~.DomainMatrix`.
 
         Parameters
         ==========

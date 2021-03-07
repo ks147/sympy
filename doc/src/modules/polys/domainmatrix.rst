@@ -6,7 +6,7 @@ Introducing the domainmatrix of the poly module
 
 This page introduces the idea behind domainmatrix which is used in SymPy's
 :mod:`sympy.polys` module. This is a relatively advanced topic so for a better understanding
-it is recommended to read about :py:class:`~.Domain` and :py:class:`~.ddm`along with
+it is recommended to read about :py:class:`~.Domain` and :py:class:`~.DDM` along with
 :mod:`sympy.matrices` module.
 
 What is domainmatrix?
@@ -29,5 +29,15 @@ In general, we represent a matrix without concerning about the :py:class:`~.Doma
    Matrix([
    [1, 2],
    [3, 4]])
+
+
+
+DomainMatrix Class Reference
+----------------------------
+
+.. :currentmodule:: sympy.polys.matrices.domainmatrix
+
+.. autoclass:: sympy.polys.matrices.domainmatrix.DomainMatrix
+   :members:
 
 
