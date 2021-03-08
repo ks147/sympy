@@ -5,7 +5,7 @@ from sympy.core.singleton import S
 from sympy.core.symbol import uniquely_named_symbol
 from sympy.polys import PurePoly, cancel
 from sympy.polys.matrices import DomainMatrix
-from sympy.polys.polytools import Poly
+from sympy.abc import lamda
 from sympy.simplify.simplify import (simplify as _simplify,
     dotprodsimp as _dotprodsimp)
 from sympy import sympify
@@ -401,24 +401,31 @@ def _charpoly(M, x='lambda', simplify=_simplify):
     det
     """
 
+    def _is_complex(M):
+        for a in M:
+            if a.is_real:
+                return True
+        return False
+
     if not M.is_square:
         raise NonSquareMatrixError()
-    if M.is_lower or M.is_upper:
-        diagonal_elements = M.diagonal()
-        x = uniquely_named_symbol(x, diagonal_elements, modify=lambda s: '_' + s)
-        m = 1
-        for i in diagonal_elements:
-            m = m * (x - simplify(i))
-        return PurePoly(m, x)
+    if M.is_symbolic() or _is_complex(M):
+        if M.is_lower or M.is_upper:
+            diagonal_elements = M.diagonal()
+            x = uniquely_named_symbol(x, diagonal_elements, modify=lambda s: '_' + s)
+            m = 1
+            for i in diagonal_elements:
+                m = m * (x - simplify(i))
+            return PurePoly(m, x)
 
-    berk_vector = _berkowitz_vector(M)
-    x = uniquely_named_symbol(x, berk_vector, modify=lambda s: '_' + s)
+        berk_vector = _berkowitz_vector(M)
+        x = uniquely_named_symbol(x, berk_vector, modify=lambda s: '_' + s)
 
-    return PurePoly([simplify(a) for a in berk_vector], x)
+        return PurePoly([simplify(a) for a in berk_vector], x)
 
-
-    # A = DomainMatrix.from_Matrix(M)
-    # return PurePoly(A.charpoly(), x)
+    x = uniquely_named_symbol(x, lamda)
+    A = DomainMatrix.from_Matrix(M)
+    return PurePoly(A.charpoly(), x)
 
 def _cofactor(M, i, j, method="berkowitz"):
     """Calculate the cofactor of an element.
