@@ -4,6 +4,8 @@ from sympy.core.numbers import Float, Integer
 from sympy.core.singleton import S
 from sympy.core.symbol import uniquely_named_symbol
 from sympy.polys import PurePoly, cancel
+from sympy.polys.matrices import DomainMatrix
+from sympy.polys.polytools import Poly
 from sympy.simplify.simplify import (simplify as _simplify,
     dotprodsimp as _dotprodsimp)
 from sympy import sympify
@@ -414,6 +416,9 @@ def _charpoly(M, x='lambda', simplify=_simplify):
 
     return PurePoly([simplify(a) for a in berk_vector], x)
 
+
+    # A = DomainMatrix.from_Matrix(M)
+    # return PurePoly(A.charpoly(), x)
 
 def _cofactor(M, i, j, method="berkowitz"):
     """Calculate the cofactor of an element.
