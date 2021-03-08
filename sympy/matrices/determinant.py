@@ -401,15 +401,15 @@ def _charpoly(M, x='lambda', simplify=_simplify):
     det
     """
 
-    def _is_complex(M):
+    def _is_real(M):
         for a in M:
-            if a.is_real:
-                return True
-        return False
+            if not a.is_real:
+                return False
+        return True
 
     if not M.is_square:
         raise NonSquareMatrixError()
-    if M.is_symbolic() or _is_complex(M):
+    if M.is_symbolic() or not _is_real(M):
         if M.is_lower or M.is_upper:
             diagonal_elements = M.diagonal()
             x = uniquely_named_symbol(x, diagonal_elements, modify=lambda s: '_' + s)
