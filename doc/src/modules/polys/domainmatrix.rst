@@ -33,9 +33,9 @@ In general, we represent a matrix without concerning about the :py:class:`~.Doma
 
 
 DomainMatrix Class Reference
-----------------------------
+============================
 
-.. :currentmodule:: sympy.polys.matrices.domainmatrix
+.. :currentmodule:: sympy.polys.matrices
 
 .. autoclass:: sympy.polys.matrices.domainmatrix.DomainMatrix
    :members:
