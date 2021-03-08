@@ -10,6 +10,7 @@ from sympy.simplify.simplify import (simplify as _simplify,
     dotprodsimp as _dotprodsimp)
 from sympy import sympify
 from sympy.functions.combinatorial.numbers import nC
+from sympy.polys.matrices.domainmatrix import DomainMatrix
 
 from .common import MatrixError, NonSquareMatrixError
 from .utilities import (
@@ -329,6 +330,12 @@ def _adjugate(M, method="berkowitz"):
     return M.cofactor_matrix(method=method).transpose()
 
 
+def _charpoly_DOM(M, x):
+    DOM = DomainMatrix.from_Matrix(M, extension=True)
+    x = uniquely_named_symbol(x, M, modify=lambda s: '_' + s)
+    return PurePoly(DOM.charpoly(), x, domain=DOM.domain)
+
+
 # This functions is a candidate for caching if it gets implemented for matrices.
 def _charpoly(M, x='lambda', simplify=_simplify):
     """Computes characteristic polynomial det(x*I - M) where I is
@@ -355,8 +362,6 @@ def _charpoly(M, x='lambda', simplify=_simplify):
     >>> M = Matrix([[1, 3], [2, 0]])
     >>> M.charpoly()
     PurePoly(lambda**2 - lambda - 6, lambda, domain='ZZ')
-    >>> M.charpoly(x) == M.charpoly(y)
-    True
     >>> M.charpoly(x) == M.charpoly(y)
     True
 
@@ -387,7 +392,7 @@ def _charpoly(M, x='lambda', simplify=_simplify):
 
     The Samuelson-Berkowitz algorithm is used to compute
     the characteristic polynomial efficiently and without any
-    division operations.  Thus the characteristic polynomial over any
+    division operations. Thus the characteristic polynomial over any
     commutative ring without zero divisors can be computed.
 
     If the determinant det(x*I - M) can be found out easily as
