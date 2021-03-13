@@ -1,3 +1,5 @@
+.. _polys-domainmatrix:
+
 DomainMatrix
 ============
 
